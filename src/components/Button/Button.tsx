@@ -6,11 +6,14 @@ import css from "./Button.module.css";
 interface ButtonProps {
   variant?: "primary" | "secondary";
   text: string;
+  onClick: () => void;
 }
 
-export default function Button({ variant, text }: ButtonProps) {
+export default function Button({ variant, text, onClick }: ButtonProps) {
   return (
-    <button className={clsx(css.button, variant && css[variant])}>
+    <button 
+    onClick={onClick}
+ className={clsx(css.button, variant && css[variant])}>
       {text}
     </button>
   );

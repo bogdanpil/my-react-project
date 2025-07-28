@@ -4,8 +4,8 @@ import { OrderForm } from "./OrderForm/OrderForm";
 import axios from "axios";
 import SearchForm from "./SearchForm/SearchForm";
 
-//import ArticleList from './ArticlesList'
-import Button from "./Button/Button";
+//import ArticleList from './ArticlesList/ArticleList'
+//import Button from "./Button/Button";
 import Product from "./Product/Product";
 
 interface Article {
