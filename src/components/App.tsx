@@ -1,36 +1,39 @@
 // src/components/App.tsx
+import Loader from "./Loader/Loader";
 import { useState } from "react";
 import { OrderForm } from "./OrderForm/OrderForm";
-import axios from "axios";
 import SearchForm from "./SearchForm/SearchForm";
-
-//import ArticleList from './ArticlesList/ArticleList'
-//import Button from "./Button/Button";
+import type { Article } from "../types/article";
+import { fetchArticles } from "../services/articleService";
 import Product from "./Product/Product";
 
-interface Article {
-  objectID: string;
-  title: string;
-  url: string;
-}
 
-interface ArticleHttpResponse {
-  hits: Article[];
-}
+
+
 
 export default function App() {
 const handleOrder = (data: string) => {
   console.log("Order received from:", data);
 
 }
-// 1. Оголошуємо і типізуємо стан
+// 1a. Оголошуємо і типізуємо стан
 const [articles, setArticles] = useState<Article[]>([]);
+// 1. Додаємо стан індикатора завантаження
+const [isLoading, setIsLoading] = useState(false);
+const [isError, setIsError] = useState(false);
+
 const handleSearch = async (topic: string) => {
-  const response = await axios.get<ArticleHttpResponse>(
-    `https://hn.algolia.com/api/v1/search?query=${topic}`
-  );
-  // 2. Записуємо дані в стан після запиту
-  setArticles(response.data.hits);
+  // 2. змінюємо індикатор на true перед запитом
+  try {
+  setIsLoading(true);
+  setIsError(false);
+  const data = await fetchArticles(topic);
+  setArticles(data);
+} catch {
+  setIsError(true);
+} finally {
+  setIsLoading(false);
+}
   };
 
   return (
@@ -61,6 +64,9 @@ const handleSearch = async (topic: string) => {
 
       <OrderForm onSubmit={handleOrder} />
       <SearchForm onSubmit={handleSearch}/>
+      {/* 4. Відображаєм повідомлення про завантаження даних в JSX */}
+      {isLoading && <Loader loading={isLoading} />}
+      {isError && <p>Ooops, something went wrong! Please try again!</p>}
       {articles.length > 0 && (
         <ul>
           {articles.map(({ objectID, url, title }) => (
